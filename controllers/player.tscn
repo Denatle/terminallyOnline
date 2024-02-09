@@ -1,0 +1,59 @@
+[gd_scene load_steps=7 format=3 uid="uid://b2t0irdiwy0xs"]
+
+[ext_resource type="Script" path="res://controllers/scripts/player.gd" id="1_l3fkn"]
+[ext_resource type="Script" path="res://addons/smoothing/smoothing.gd" id="2_4rctb"]
+[ext_resource type="Script" path="res://controllers/scripts/terminal_controller.gd" id="3_i8tme"]
+
+[sub_resource type="CapsuleMesh" id="CapsuleMesh_bn482"]
+lightmap_size_hint = Vector2i(17, 14)
+add_uv2 = true
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_cp5qe"]
+
+[sub_resource type="SceneReplicationConfig" id="SceneReplicationConfig_l5xba"]
+properties/0/path = NodePath(".:position")
+properties/0/spawn = true
+properties/0/replication_mode = 1
+properties/1/path = NodePath(".:rotation")
+properties/1/spawn = true
+properties/1/replication_mode = 1
+properties/2/path = NodePath("Smoothing/Camera3D:rotation")
+properties/2/spawn = true
+properties/2/replication_mode = 1
+
+[node name="Player" type="CharacterBody3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
+collision_layer = 2
+script = ExtResource("1_l3fkn")
+MOUSE_SENSITIVITY = 0.2
+
+[node name="Smoothing" type="Node3D" parent="."]
+script = ExtResource("2_4rctb")
+
+[node name="Camera3D" type="Camera3D" parent="Smoothing"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.6, 0)
+fov = 110.0
+
+[node name="TerminalCast" type="RayCast3D" parent="Smoothing/Camera3D"]
+transform = Transform3D(1, 0, 0, 0, -4.37114e-08, -1, 0, 1, -4.37114e-08, 0, 0, 0)
+target_position = Vector3(0, -1.545, 0)
+collision_mask = 16
+hit_from_inside = true
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Smoothing"]
+layers = 2
+gi_mode = 2
+mesh = SubResource("CapsuleMesh_bn482")
+skeleton = NodePath("../..")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+shape = SubResource("CapsuleShape3D_cp5qe")
+
+[node name="TeminalController" type="Node" parent="." node_paths=PackedStringArray("TerminalCast", "PlayerNode", "PlayerCamera")]
+script = ExtResource("3_i8tme")
+TerminalCast = NodePath("../Smoothing/Camera3D/TerminalCast")
+PlayerNode = NodePath("..")
+PlayerCamera = NodePath("../Smoothing/Camera3D")
+
+[node name="MultiplayerSynchronizer" type="MultiplayerSynchronizer" parent="."]
+replication_config = SubResource("SceneReplicationConfig_l5xba")

@@ -1,0 +1,9 @@
+[gd_scene load_steps=2 format=3 uid="uid://cpv8ondio727o"]
+
+[ext_resource type="Script" path="res://controllers/scripts/terminal_controller.gd" id="1_1222o"]
+
+[node name="TeminalController" type="Node" node_paths=PackedStringArray("TerminalCast", "PlayerNode", "PlayerCamera")]
+script = ExtResource("1_1222o")
+TerminalCast = NodePath("")
+PlayerNode = NodePath("")
+PlayerCamera = NodePath("")

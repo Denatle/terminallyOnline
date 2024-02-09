@@ -1,0 +1,20 @@
+[gd_scene load_steps=3 format=3 uid="uid://b2b8d7cp3y5qv"]
+
+[ext_resource type="Theme" uid="uid://celk4s4lbecic" path="res://assets/themes/terminal_theme.tres" id="1_k63lm"]
+[ext_resource type="Script" path="res://objects/scripts/console_line.gd" id="2_xa34a"]
+
+[node name="ConsoleLine" type="LineEdit"]
+offset_right = 456.0
+offset_bottom = 39.0
+size_flags_horizontal = 3
+size_flags_vertical = 10
+focus_mode = 1
+theme = ExtResource("1_k63lm")
+text = "> "
+context_menu_enabled = false
+virtual_keyboard_enabled = false
+flat = true
+caret_blink = true
+script = ExtResource("2_xa34a")
+
+[connection signal="text_changed" from="." to="." method="_on_text_changed"]

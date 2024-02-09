@@ -1,0 +1,6 @@
+[gd_scene load_steps=2 format=3 uid="uid://f2ylyuq83lko"]
+
+[ext_resource type="Script" path="res://controllers/scripts/move_state.gd" id="1_uoo31"]
+
+[node name="WalkState" type="Node"]
+script = ExtResource("1_uoo31")

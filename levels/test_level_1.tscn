@@ -1,0 +1,130 @@
+[gd_scene load_steps=18 format=3 uid="uid://dv8j3svj8dm1u"]
+
+[ext_resource type="Texture2D" uid="uid://ccvlmivotp07n" path="res://assets/textures/hiptyc_2020_8k.exr" id="1_1i3ud"]
+[ext_resource type="PackedScene" uid="uid://b2t0irdiwy0xs" path="res://controllers/player.tscn" id="1_rovcs"]
+[ext_resource type="PackedScene" uid="uid://cvab8iqnbxadj" path="res://objects/system.tscn" id="3_jqplq"]
+[ext_resource type="LightmapGIData" uid="uid://dt8iwpap2pst2" path="res://levels/test_level_1.lmbake" id="4_2g64f"]
+[ext_resource type="PackedScene" uid="uid://dct7qvf5cyqij" path="res://objects/terminal.tscn" id="5_4oger"]
+[ext_resource type="PackedScene" uid="uid://cxigunscku7j6" path="res://objects/commands/help.tscn" id="6_u3gq5"]
+[ext_resource type="PackedScene" uid="uid://c7svu1j2ose3a" path="res://objects/commands/echo.tscn" id="6_x51sy"]
+[ext_resource type="PackedScene" uid="uid://bsjp6a1xkwcid" path="res://objects/commands/clear.tscn" id="8_5m6fh"]
+[ext_resource type="PackedScene" uid="uid://c7dxg8xk06oyj" path="res://assets/meshes/ship_blockout.glb" id="8_dvilm"]
+[ext_resource type="PackedScene" uid="uid://b5brr4w4n700h" path="res://controllers/state_machine.tscn" id="10_cxrf3"]
+[ext_resource type="PackedScene" uid="uid://buogvgenkfedk" path="res://controllers/states/wander_state_test.tscn" id="11_nqds4"]
+
+[sub_resource type="PanoramaSkyMaterial" id="PanoramaSkyMaterial_u8520"]
+panorama = ExtResource("1_1i3ud")
+
+[sub_resource type="Sky" id="Sky_i0trx"]
+sky_material = SubResource("PanoramaSkyMaterial_u8520")
+
+[sub_resource type="Environment" id="Environment_vmj1b"]
+background_mode = 2
+sky = SubResource("Sky_i0trx")
+ambient_light_source = 1
+reflected_light_source = 2
+tonemap_mode = 2
+glow_enabled = true
+glow_normalized = true
+glow_intensity = 5.55
+glow_strength = 1.19
+glow_mix = 0.143
+glow_bloom = 0.37
+glow_blend_mode = 4
+fog_light_color = Color(0.423529, 0.458824, 0.509804, 1)
+fog_density = 0.0
+fog_sky_affect = 0.267
+volumetric_fog_density = 0.0099
+volumetric_fog_emission = Color(0.121569, 0.121569, 0.121569, 1)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_d0bp2"]
+cull_mode = 2
+
+[sub_resource type="SphereMesh" id="SphereMesh_am02i"]
+
+[sub_resource type="SphereShape3D" id="SphereShape3D_o4nwb"]
+
+[node name="TestLevel1" type="Node3D"]
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = SubResource("Environment_vmj1b")
+
+[node name="LightmapGI" type="LightmapGI" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -937.266, 0, 197.374)
+layers = 7
+quality = 2
+bounce_indirect_energy = 0.5
+interior = true
+denoiser_strength = 0.128
+light_data = ExtResource("4_2g64f")
+
+[node name="ReflectionProbe" type="ReflectionProbe" parent="LightmapGI"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.225464, 2.07685, 1.40558)
+max_distance = 0.7
+size = Vector3(28.0752, 4.34476, 23.8994)
+origin_offset = Vector3(11.2582, 0, 11.9397)
+enable_shadows = true
+cull_mask = 1048573
+
+[node name="LightmapProbe" type="LightmapProbe" parent="LightmapGI"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.0577393, 1.40552, 5.42444)
+
+[node name="Player" parent="." instance=ExtResource("1_rovcs")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -936.728, 1.01965, 205.742)
+
+[node name="Terminal" parent="." node_paths=PackedStringArray("CommandContainer") instance=ExtResource("5_4oger")]
+transform = Transform3D(1.31134e-07, 0, -1, 0, 1, 0, 1, 0, 1.31134e-07, -939.161, -9.68575e-08, 204.006)
+CommandContainer = NodePath("Commands")
+
+[node name="Commands" type="Node" parent="Terminal"]
+
+[node name="Help" parent="Terminal/Commands" instance=ExtResource("6_u3gq5")]
+
+[node name="Echo" parent="Terminal/Commands" instance=ExtResource("6_x51sy")]
+
+[node name="Clear" parent="Terminal/Commands" instance=ExtResource("8_5m6fh")]
+
+[node name="system" parent="." instance=ExtResource("3_jqplq")]
+
+[node name="ship_blockout" parent="." instance=ExtResource("8_dvilm")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -936.588, 0, 197.761)
+
+[node name="Ship" parent="ship_blockout" index="0"]
+layers = 6
+material_override = SubResource("StandardMaterial3D_d0bp2")
+
+[node name="OmniLight3D" type="OmniLight3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -936.566, 3.5083, 204.705)
+light_energy = 0.471
+light_volumetric_fog_energy = 0.0
+light_bake_mode = 1
+shadow_enabled = true
+omni_range = 7.55967
+omni_shadow_mode = 0
+
+[node name="OmniLight3D2" type="OmniLight3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -936.566, 3.59721, 190.011)
+light_energy = 0.471
+light_volumetric_fog_energy = 0.0
+light_bake_mode = 1
+shadow_enabled = true
+omni_range = 12.994
+omni_shadow_mode = 0
+
+[node name="Guy" type="CharacterBody3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -936.728, 0.570236, 203.296)
+motion_mode = 1
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Guy"]
+mesh = SubResource("SphereMesh_am02i")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Guy"]
+shape = SubResource("SphereShape3D_o4nwb")
+
+[node name="StateMachine" parent="Guy" node_paths=PackedStringArray("first_state") instance=ExtResource("10_cxrf3")]
+first_state = NodePath("WanderStateTest")
+
+[node name="WanderStateTest" parent="Guy/StateMachine" node_paths=PackedStringArray("guy") instance=ExtResource("11_nqds4")]
+guy = NodePath("../..")
+
+[editable path="ship_blockout"]

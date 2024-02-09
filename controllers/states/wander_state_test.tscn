@@ -1,0 +1,6 @@
+[gd_scene load_steps=2 format=3 uid="uid://buogvgenkfedk"]
+
+[ext_resource type="Script" path="res://controllers/scripts/wander_state_test.gd" id="1_ldpj8"]
+
+[node name="WanderStateTest" type="Node"]
+script = ExtResource("1_ldpj8")

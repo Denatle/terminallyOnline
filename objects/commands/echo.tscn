@@ -1,0 +1,6 @@
+[gd_scene load_steps=2 format=3 uid="uid://c7svu1j2ose3a"]
+
+[ext_resource type="Script" path="res://objects/commands/scripts/echo.gd" id="1_a4pkp"]
+
+[node name="Echo" type="Node"]
+script = ExtResource("1_a4pkp")

@@ -1,0 +1,258 @@
+[gd_scene load_steps=24 format=3 uid="uid://c60kxt2a5yhwv"]
+
+[ext_resource type="Script" path="res://levels/scripts/level_player_adder.gd" id="1_4ucvu"]
+[ext_resource type="VoxelGIData" uid="uid://dy57dc4m0b1da" path="res://levels/test.VoxelGI_data.res" id="2_b8yue"]
+[ext_resource type="Material" uid="uid://cn1gsy15bkaff" path="res://assets/materials/grid.tres" id="3_rc83b"]
+[ext_resource type="Texture2D" uid="uid://rot18na0wh6a" path="res://assets/textures/grid.jpg" id="3_txi6f"]
+[ext_resource type="PackedScene" uid="uid://dct7qvf5cyqij" path="res://objects/terminal.tscn" id="4_fi1kj"]
+[ext_resource type="PackedScene" uid="uid://bsjp6a1xkwcid" path="res://objects/commands/clear.tscn" id="6_8yvw8"]
+[ext_resource type="PackedScene" uid="uid://c7svu1j2ose3a" path="res://objects/commands/echo.tscn" id="7_ky7yj"]
+[ext_resource type="PackedScene" uid="uid://cxigunscku7j6" path="res://objects/commands/help.tscn" id="8_2oluj"]
+
+[sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_ow161"]
+ground_bottom_color = Color(0.866667, 0.607843, 0.0745098, 1)
+ground_curve = 0.139289
+
+[sub_resource type="Sky" id="Sky_v0pek"]
+sky_material = SubResource("ProceduralSkyMaterial_ow161")
+
+[sub_resource type="Environment" id="Environment_7dcy4"]
+background_mode = 2
+sky = SubResource("Sky_v0pek")
+ambient_light_source = 2
+ambient_light_color = Color(1, 1, 1, 1)
+ambient_light_sky_contribution = 0.36
+tonemap_mode = 2
+tonemap_exposure = 0.75
+ssao_enabled = true
+ssil_radius = 8.48
+sdfgi_cascades = 3
+sdfgi_max_distance = 102.4
+
+[sub_resource type="BoxMesh" id="BoxMesh_h5ox3"]
+add_uv2 = true
+size = Vector3(208, 0.2, 208)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_esfex"]
+size = Vector3(208, 0.2, 208)
+
+[sub_resource type="BoxMesh" id="BoxMesh_cn57n"]
+lightmap_size_hint = Vector2i(14, 21)
+add_uv2 = true
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_nknek"]
+
+[sub_resource type="BoxMesh" id="BoxMesh_dm165"]
+lightmap_size_hint = Vector2i(49, 62)
+add_uv2 = true
+size = Vector3(1, 1.6, 8)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_02n67"]
+size = Vector3(1, 1.6, 8)
+
+[sub_resource type="Shader" id="Shader_cwof1"]
+code = "// NOTE: Shader automatically converted from Godot Engine 4.1.dev4's StandardMaterial3D.
+
+shader_type spatial;
+render_mode blend_mix,depth_draw_opaque,cull_back,diffuse_burley,specular_schlick_ggx;
+uniform vec4 albedo : source_color;
+uniform sampler2D texture_albedo : source_color,filter_linear_mipmap_anisotropic,repeat_enable;
+uniform float point_size : hint_range(0,128);
+uniform float roughness : hint_range(0,1);
+uniform sampler2D texture_metallic : hint_default_white,filter_linear_mipmap_anisotropic,repeat_enable;
+uniform vec4 metallic_texture_channel;
+uniform sampler2D texture_roughness : hint_roughness_r,filter_linear_mipmap_anisotropic,repeat_enable;
+uniform float specular;
+uniform float metallic;
+varying vec3 uv1_triplanar_pos;
+uniform float uv1_blend_sharpness;
+varying vec3 uv1_power_normal;
+uniform vec3 uv1_scale;
+uniform vec3 uv1_offset;
+uniform vec3 uv2_scale;
+uniform vec3 uv2_offset;
+
+
+void vertex() {
+	TANGENT = vec3(0.0,0.0,-1.0) * abs(NORMAL.x);
+	TANGENT+= vec3(1.0,0.0,0.0) * abs(NORMAL.y);
+	TANGENT+= vec3(1.0,0.0,0.0) * abs(NORMAL.z);
+	TANGENT = normalize(TANGENT);
+	BINORMAL = vec3(0.0,1.0,0.0) * abs(NORMAL.x);
+	BINORMAL+= vec3(0.0,0.0,-1.0) * abs(NORMAL.y);
+	BINORMAL+= vec3(0.0,1.0,0.0) * abs(NORMAL.z);
+	BINORMAL = normalize(BINORMAL);
+	uv1_power_normal=pow(abs(NORMAL),vec3(uv1_blend_sharpness));
+	uv1_triplanar_pos = VERTEX * uv1_scale + uv1_offset;
+	uv1_power_normal/=dot(uv1_power_normal,vec3(1.0));
+	uv1_triplanar_pos *= vec3(1.0,-1.0, 1.0);
+}
+
+vec4 triplanar_texture(sampler2D p_sampler,vec3 p_weights,vec3 p_triplanar_pos) {
+	vec4 samp=vec4(0.0);
+	samp+= texture(p_sampler,p_triplanar_pos.xy) * p_weights.z;
+	samp+= texture(p_sampler,p_triplanar_pos.xz) * p_weights.y;
+	samp+= texture(p_sampler,p_triplanar_pos.zy * vec2(-1.0,1.0)) * p_weights.x;
+	return samp;
+}
+
+void fragment() {
+	vec4 albedo_tex = triplanar_texture(texture_albedo,uv1_power_normal,uv1_triplanar_pos);
+	ALBEDO = (albedo.rgb * albedo_tex.r) + albedo_tex.g + albedo_tex.b;
+	float metallic_tex = dot(triplanar_texture(texture_metallic,uv1_power_normal,uv1_triplanar_pos),metallic_texture_channel);
+	METALLIC = metallic_tex * metallic;
+	vec4 roughness_texture_channel = vec4(1.0,0.0,0.0,0.0);
+	float roughness_tex = dot(triplanar_texture(texture_roughness,uv1_power_normal,uv1_triplanar_pos),roughness_texture_channel);
+	ROUGHNESS = (1.0 - albedo_tex.g) * roughness;
+	SPECULAR = specular;
+}
+"
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_af8pk"]
+render_priority = 0
+shader = SubResource("Shader_cwof1")
+shader_parameter/albedo = Color(0.901961, 0.568627, 0, 1)
+shader_parameter/point_size = 4.5
+shader_parameter/roughness = 0.5
+shader_parameter/metallic_texture_channel = null
+shader_parameter/specular = 0.5
+shader_parameter/metallic = 0.0
+shader_parameter/uv1_blend_sharpness = 1.0
+shader_parameter/uv1_scale = Vector3(0.5, 0.5, 0.5)
+shader_parameter/uv1_offset = Vector3(-0.25, 0.97, -0.895)
+shader_parameter/uv2_scale = Vector3(1, 1, 1)
+shader_parameter/uv2_offset = Vector3(0, 0, 0)
+shader_parameter/texture_albedo = ExtResource("3_txi6f")
+shader_parameter/texture_metallic = ExtResource("3_txi6f")
+shader_parameter/texture_roughness = ExtResource("3_txi6f")
+
+[sub_resource type="CapsuleMesh" id="CapsuleMesh_u4w2m"]
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_jopc7"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_vo0kn"]
+size = Vector3(0.782227, 0.472656, 0.833008)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_p0v4f"]
+size = Vector3(1, 1.24896, 1)
+
+[node name="Test" type="Node3D"]
+script = ExtResource("1_4ucvu")
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = SubResource("Environment_7dcy4")
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
+transform = Transform3D(0.755476, -0.573711, 0.316405, 0, 0.482931, 0.875659, -0.655176, -0.661539, 0.364843, 0, 0, 0)
+shadow_enabled = true
+directional_shadow_split_1 = 0.065
+directional_shadow_split_2 = 0.21
+directional_shadow_split_3 = 0.51
+directional_shadow_max_distance = 50.0
+
+[node name="VoxelGI" type="VoxelGI" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.446808, 0)
+layers = 1023
+size = Vector3(200.304, 4.15546, 204.042)
+data = ExtResource("2_b8yue")
+
+[node name="Floor" type="StaticBody3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.1, 0)
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Floor"]
+material_override = ExtResource("3_rc83b")
+gi_lightmap_scale = 3
+mesh = SubResource("BoxMesh_h5ox3")
+skeleton = NodePath("../..")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Floor"]
+shape = SubResource("BoxShape3D_esfex")
+
+[node name="Box" type="StaticBody3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 0)
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Box"]
+material_override = ExtResource("3_rc83b")
+mesh = SubResource("BoxMesh_cn57n")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Box"]
+shape = SubResource("BoxShape3D_nknek")
+
+[node name="Box2" type="StaticBody3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, -6)
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Box2"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.3, 0)
+material_override = ExtResource("3_rc83b")
+mesh = SubResource("BoxMesh_dm165")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Box2"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.3, 0)
+shape = SubResource("BoxShape3D_02n67")
+
+[node name="CSGBox3D" type="CSGBox3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 7.5, 0.95, -0.5)
+material_override = SubResource("ShaderMaterial_af8pk")
+use_collision = true
+size = Vector3(4.05859, 1.9, 3)
+
+[node name="CSGBox3D" type="CSGBox3D" parent="CSGBox3D"]
+transform = Transform3D(1, 0, 0, 0, 0.866025, 0.5, 0, -0.5, 0.866025, 0.109344, 1.47898, 1.5754)
+operation = 2
+size = Vector3(4.6546, 7.5509, 3.58386)
+
+[node name="CSGBox3D2" type="CSGBox3D" parent="CSGBox3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.452838, -1.81872)
+size = Vector3(3.2478, 1, 0.647339)
+
+[node name="CSGBox3D3" type="CSGBox3D" parent="CSGBox3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.680377, -2.41872)
+size = Vector3(3.2478, 0.544922, 0.647339)
+
+[node name="Players" type="Node" parent="."]
+
+[node name="Dummy" type="StaticBody3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 7.5, 0, -8.5)
+collision_layer = 2
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Dummy"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
+mesh = SubResource("CapsuleMesh_u4w2m")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Dummy"]
+shape = SubResource("CapsuleShape3D_jopc7")
+
+[node name="HitboxHead" type="Area3D" parent="Dummy"]
+collision_layer = 4
+collision_mask = 0
+monitoring = false
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Dummy/HitboxHead"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.60066, 0)
+shape = SubResource("BoxShape3D_vo0kn")
+
+[node name="HitboxTorso" type="Area3D" parent="Dummy"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.988939, 0)
+collision_layer = 4
+collision_mask = 0
+monitoring = false
+
+[node name="CollisionShape3D2" type="CollisionShape3D" parent="Dummy/HitboxTorso"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.263076, 0)
+shape = SubResource("BoxShape3D_p0v4f")
+
+[node name="Terminal" parent="." node_paths=PackedStringArray("CommandContainer") instance=ExtResource("4_fi1kj")]
+transform = Transform3D(-4.37114e-08, 0, 1, 0, 1, 0, -1, 0, -4.37114e-08, 5, 0, -1.1)
+CommandContainer = NodePath("Commands")
+
+[node name="Commands" type="Node" parent="Terminal"]
+
+[node name="Clear" parent="Terminal/Commands" instance=ExtResource("6_8yvw8")]
+
+[node name="Echo" parent="Terminal/Commands" instance=ExtResource("7_ky7yj")]
+
+[node name="Help" parent="Terminal/Commands" instance=ExtResource("8_2oluj")]
+
+[node name="ReflectionProbe" type="ReflectionProbe" parent="Terminal"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.76837e-07, 1.39643, -2.45441)
+size = Vector3(6.4668, 3.31812, 7.30469)

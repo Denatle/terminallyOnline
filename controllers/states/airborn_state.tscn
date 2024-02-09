@@ -1,0 +1,6 @@
+[gd_scene load_steps=2 format=3 uid="uid://dhmk0g4p3k5te"]
+
+[ext_resource type="Script" path="res://controllers/scripts/airborn_state.gd" id="1_otoi6"]
+
+[node name="AirbornState" type="Node"]
+script = ExtResource("1_otoi6")
