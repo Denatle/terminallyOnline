@@ -70,7 +70,7 @@ func _command(text: String):
 		_add_local_line("Error: unknown command.", "")
 		_add_local_line('Type "help" to view commands.', "")
 		return
-	for line in command_node.trigger(arguments, TerminalApi).split("\n"):
+	for line in command_node.local_trigger(arguments, TerminalApi).split("\n"):
 		_add_local_line(line, "")
 
 func _add_local_line(text, prefix):

@@ -33,4 +33,8 @@ func set_text(text: String, prefix: String) -> void:
 
 
 func _on_console_line_text_text_changed(new_text: String) -> void:
-	terminal.sync_input.rpc(new_text, prefix_label.text, console_line_text.caret_column)
+	if prefix_label != null:
+		terminal.sync_input.rpc(new_text, prefix_label.text, console_line_text.caret_column)
+		return
+	terminal.sync_input.rpc(new_text, "", console_line_text.caret_column)
+	
