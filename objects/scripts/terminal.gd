@@ -9,7 +9,7 @@ class_name Terminal
 @onready var TerminalApi: TerminalAPI = $TerminalAPI
 @onready var ViewPort: SubViewport = $SubViewportContainer/SubViewport
 
-@onready var _last_line: LineEdit = $SubViewportContainer/SubViewport/CanvasLayer/Control/MarginContainer/LinesContainer/ConsoleLine
+@onready var _last_line: ConsoleLine = $SubViewportContainer/SubViewport/CanvasLayer/Control/MarginContainer/LinesContainer/ConsoleLine
 
 const CONSOLE_LINE = preload("res://objects/console_line.tscn")
 const PREFIX = "> "
@@ -28,31 +28,28 @@ func toggle_terminal():
 	Camera.visible = _is_enabled
 	Camera.current = _is_enabled
 	if !_is_enabled:
-		_last_line.release_focus()
+		_last_line.release_text_focus()
 	else:
-		_last_line.grab_focus()
+		_last_line.grab_text_focus()
 	ViewPort.gui_disable_input = !_is_enabled
 	
 func _input(event):
 	if !_is_enabled or event.is_released():
 		return
 	if event.as_text() == "Enter":
-		_command(_last_line.text)
-		_add_local_line()
+		_command(_last_line.get_text())
+		_add_local_line("", PREFIX)
 
 func get_camera():
 	return Camera
 
-func _add_line(text: String = PREFIX):
+func _add_line(text: String, prefix):
 	if LinesContainer.get_child_count() >= MAX_LINES:
 		_free_lines()
-	if _last_line:
-		_last_line.disable()
 	_last_line = CONSOLE_LINE.instantiate()
 	LinesContainer.add_child(_last_line, true)
-	_last_line.grab_focus()
-	_last_line.text = text
-	_last_line.caret_column = len(PREFIX)
+	_last_line.grab_text_focus()
+	_last_line.set_text(text, prefix)
 	
 func _free_lines():
 	var children = LinesContainer.get_children()
@@ -70,25 +67,25 @@ func _command(text: String):
 	var arguments = text.trim_prefix(PREFIX).strip_edges().trim_prefix(command).strip_edges().split(" ")
 	var command_node: Command = CommandContainer.find_child(command.capitalize())
 	if command_node == null:
-		_add_local_line("Error: unknown command.")
-		_add_local_line('Type "help" to view commands.')
+		_add_local_line("Error: unknown command.", "")
+		_add_local_line('Type "help" to view commands.', "")
 		return
 	for line in command_node.trigger(arguments, TerminalApi).split("\n"):
-		_add_local_line(line)
+		_add_local_line(line, "")
 
-func _add_local_line(text: String = PREFIX):
-	add_remote_line.rpc(text)
-	sync_input.rpc(text, _last_line.caret_column)
-	_add_line(text)
+func _add_local_line(text, prefix):
+	add_remote_line.rpc(text, prefix)
+	sync_input.rpc(text, prefix, _last_line.get_caret_column())
+	_add_line(text, prefix)
 
 @rpc("reliable", "any_peer", "call_remote", 0)
-func add_remote_line(text: String = PREFIX):
-	_add_line(text)
+func add_remote_line(text: String, prefix):
+	_add_line(text, prefix)
 	
 @rpc("reliable", "any_peer", "call_remote", 0)
-func sync_input(text: String = PREFIX, caret_column: int = len(PREFIX)):
-	_last_line.text = text
-	_last_line.set_caret_column(caret_column)
+func sync_input(text: String, prefix, caret_column):
+	_last_line.set_text(text, prefix)
+	_last_line.set_text_caret_column(caret_column)
 
 @rpc("reliable", "any_peer", "call_remote", 0)
 func sync_use(val):

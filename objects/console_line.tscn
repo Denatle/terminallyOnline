@@ -3,18 +3,28 @@
 [ext_resource type="Theme" uid="uid://celk4s4lbecic" path="res://assets/themes/terminal_theme.tres" id="1_k63lm"]
 [ext_resource type="Script" path="res://objects/scripts/console_line.gd" id="2_xa34a"]
 
-[node name="ConsoleLine" type="LineEdit"]
-offset_right = 456.0
-offset_bottom = 39.0
+[node name="ConsoleLine" type="HBoxContainer"]
+anchors_preset = -1
+anchor_right = 0.493924
+anchor_bottom = 0.121914
+theme = ExtResource("1_k63lm")
+script = ExtResource("2_xa34a")
+metadata/_edit_use_anchors_ = true
+
+[node name="Prefix" type="Label" parent="."]
+layout_mode = 2
+size_flags_horizontal = 0
+text = "> "
+
+[node name="ConsoleLineText" type="LineEdit" parent="."]
+layout_mode = 2
 size_flags_horizontal = 3
-size_flags_vertical = 10
 focus_mode = 1
 theme = ExtResource("1_k63lm")
-text = "> "
 context_menu_enabled = false
 virtual_keyboard_enabled = false
 flat = true
 caret_blink = true
-script = ExtResource("2_xa34a")
+metadata/_edit_use_anchors_ = true
 
-[connection signal="text_changed" from="." to="." method="_on_text_changed"]
+[connection signal="text_changed" from="ConsoleLineText" to="." method="_on_console_line_text_text_changed"]

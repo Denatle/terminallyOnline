@@ -1,21 +1,36 @@
-extends LineEdit
+class_name ConsoleLine extends HBoxContainer
 
-class_name ConsoleLine
-
-const PREFIX = "> "
+@onready var console_line_text: LineEdit = $ConsoleLineText
+@onready var prefix_label: Label = $Prefix
 @onready var terminal: Terminal = $"../../../../../../.."
 
-func disable():
-	process_mode = Node.PROCESS_MODE_DISABLED
+func _ready() -> void:
+	console_line_text.set_focus_mode(Control.FOCUS_ALL)
+	console_line_text.grab_focus()
+	
+func get_text():
+	return console_line_text.text
 
-func _ready():
-	text = PREFIX
-	caret_column = len(PREFIX)
+func grab_text_focus() -> void:
+	console_line_text.grab_focus()
 
-func _process(delta: float) -> void:
-	caret_column = clamp(caret_column, len(PREFIX), INF)
+func release_text_focus():
+	console_line_text.release_focus()
 
-func _on_text_changed(new_text: String):
-	if !new_text.begins_with("> "):
-		text = PREFIX + new_text.lstrip(PREFIX)
-	terminal.sync_input.rpc(new_text, caret_column)
+func set_text_caret_column(caret_collum):
+	console_line_text.caret_column = caret_collum
+	
+func get_caret_column():
+	return console_line_text.caret_column
+
+func remove_prefix():
+	prefix_label.queue_free()
+
+func set_text(text: String, prefix: String) -> void:
+	if !prefix:
+		remove_prefix()
+	console_line_text.text = text
+
+
+func _on_console_line_text_text_changed(new_text: String) -> void:
+	terminal.sync_input.rpc(new_text, prefix_label.text, console_line_text.caret_column)
