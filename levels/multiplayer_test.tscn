@@ -1,4 +1,4 @@
-[gd_scene load_steps=13 format=3 uid="uid://bty3645j0phtr"]
+[gd_scene load_steps=16 format=3 uid="uid://bty3645j0phtr"]
 
 [ext_resource type="Script" path="res://levels/scripts/level_player_adder.gd" id="1_5gihs"]
 [ext_resource type="Material" uid="uid://cn1gsy15bkaff" path="res://assets/materials/grid.tres" id="1_aw7po"]
@@ -31,6 +31,27 @@ size = Vector3(234, 0.2, 156)
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_qmj3e"]
 size = Vector3(234, 0.2, 156)
+
+[sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_rmfjn"]
+collision_mode = 2
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_hw4jo"]
+shading_mode = 0
+albedo_color = Color(0, 1, 0, 1)
+refraction_scale = 0.46
+texture_filter = 0
+disable_receive_shadows = true
+billboard_mode = 3
+billboard_keep_scale = true
+particles_anim_h_frames = 1
+particles_anim_v_frames = 1
+particles_anim_loop = false
+grow = true
+grow_amount = -0.05
+
+[sub_resource type="BoxMesh" id="BoxMesh_bvw7c"]
+material = SubResource("StandardMaterial3D_hw4jo")
+size = Vector3(0.02, 0.02, 0.02)
 
 [node name="MultiplayerTest" type="Node3D"]
 script = ExtResource("1_5gihs")
@@ -67,7 +88,7 @@ spawn_path = NodePath("../../Players")
 [node name="Players" type="Node" parent="."]
 
 [node name="Terminal" parent="." node_paths=PackedStringArray("CommandContainer") instance=ExtResource("4_1i0xk")]
-transform = Transform3D(-4.37114e-08, 0, 1, 0, 1, 0, -1, 0, -4.37114e-08, 5, 0, -1.1)
+transform = Transform3D(-4.37114e-08, 0, 1, 0, 1, 0, -1, 0, -4.37114e-08, 4.98047, 2.23517e-08, -1.07243)
 CommandContainer = NodePath("Commands")
 
 [node name="Commands" type="Node" parent="Terminal"]
@@ -78,6 +99,34 @@ CommandContainer = NodePath("Commands")
 
 [node name="Help" parent="Terminal/Commands" instance=ExtResource("7_oupkt")]
 
-[node name="ReflectionProbe" type="ReflectionProbe" parent="Terminal"]
+[node name="Terminal2" parent="." node_paths=PackedStringArray("CommandContainer") instance=ExtResource("4_1i0xk")]
+transform = Transform3D(-4.37114e-08, 0, 1, 0, 1, 0, -1, 0, -4.37114e-08, 5, 0, 4.9)
+CommandContainer = NodePath("../Terminal/Commands")
+
+[node name="Commands" type="Node" parent="Terminal2"]
+
+[node name="Clear" parent="Terminal2/Commands" instance=ExtResource("5_iky0v")]
+
+[node name="Echo" parent="Terminal2/Commands" instance=ExtResource("6_87ybf")]
+
+[node name="Help" parent="Terminal2/Commands" instance=ExtResource("7_oupkt")]
+
+[node name="ReflectionProbe" type="ReflectionProbe" parent="Terminal2"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.76837e-07, 1.39643, -2.45441)
 size = Vector3(6.4668, 3.31812, 7.30469)
+
+[node name="GPUParticlesCollisionBox3D2" type="GPUParticlesCollisionBox3D" parent="Terminal2"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.3686, 0.097454)
+size = Vector3(1.42383, 1.31665, 0.556396)
+
+[node name="GPUParticlesAttractorBox3D2" type="GPUParticlesAttractorBox3D" parent="Terminal2"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.06531, 0.104859)
+strength = 128.0
+size = Vector3(16.4041, 6.32849, 13.2588)
+
+[node name="GPUParticles3D2" type="GPUParticles3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5.01617, 1.44427, -1.42835)
+amount = 1000
+visibility_aabb = AABB(-4, -0.531459, -10.8909, 8, 1.06292, 21.7819)
+process_material = SubResource("ParticleProcessMaterial_rmfjn")
+draw_pass_1 = SubResource("BoxMesh_bvw7c")
